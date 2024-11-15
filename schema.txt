@@ -1,0 +1,52 @@
+1. User
+   Description: Extends Django's built-in AbstractUser to include additional fields like phone number and name.
+   Fields:
+     - id: Int field, primary key (auto-generated).
+     - name: Character field for the user's name (max length: 100, optional).
+     - phone_number: Unique character field for the user's phone number (max length: 15, required).
+     - email: Optional email field.
+     - groups: Many-to-many relationship with Django's Group model.
+     - user_permissions: Many-to-many relationship with Django's Permission model.
+     - REQUIRED_FIELDS: List of fields required when creating a user (phone_number, name).
+     - USERNAME_FIELD: Field used to log in (username).
+
+2. Contact
+   Description: Represents the user's contacts, associated with a specific user (owner).
+   Fields:
+     - id: Int field, primary key (auto-generated).
+     - owner: Foreign key linking the contact to a User.
+     - name: Character field for the contact's name (max length: 100).
+     - phone_number: Character field for the contact's phone number (max length: 15).
+     - is_spam: Boolean field indicating if the contact is marked as spam (default: False).
+     - is_anonymous: Boolean field indicating if the contact is stored as anonymous (default: False).
+     - Meta.unique_together: Ensures one contact per owner with a specific phone number.
+
+3. SpamReport
+   Description: Tracks spam reports for specific phone numbers.
+   Fields:
+     - id: Int field, primary key (auto-generated).
+     - phone_number: Unique character field for the reported phone number (max length: 15).
+     - spam_count: Integer field counting the number of spam reports (default: 0).
+     - last_reported_at: Timestamp field recording the last report time.
+
+4. RequestLog
+   Description: Logs requests made by users to the system.
+   Fields:
+     - id: Int field, primary key (auto-generated).
+     - user: Foreign key linking to a User (null if deleted).
+     - request_type: Character field for the type of request (max length: 10).
+     - timestamp: Timestamp for when the request was made.
+     - data: JSON field for storing relevant request data.
+     - request_path: Character field for the request path (default: '/unknown').
+     - __str__(): Returns a string representation of the log entry.
+
+5. SpamReporters
+   Description: Tracks individual user reports for specific phone numbers.
+   Fields:
+     - id: Int field, primary key (auto-generated).
+     - user: Foreign key linking to a User.
+     - phone_number: Character field for the reported phone number (max length: 15).
+     - report_count: Integer field counting the number of reports for the phone number (default: 0).
+     - first_reported_at: Timestamp field for when the number was first reported.
+     - last_reported_at: Timestamp field for when the number was last reported.
+     - Meta.unique_together: Ensures each user can report a specific phone number only once.
